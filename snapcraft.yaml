@@ -1,0 +1,54 @@
+name: tectonic
+version: '0.14.1'
+summary: Package for tectonic
+description: |
+  Tectonic is a modernized, complete, self-contained TeX/LaTeX engine, powered by XeTeX and TeXLive.
+
+confinement: strict
+base: core22
+
+grade: stable
+
+parts:
+  rust-deps:
+    plugin: nil
+    build-packages:
+      - curl
+    override-pull: |
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+  tectonic:
+    plugin: rust
+    source: .
+    after: [rust-deps]
+    build-packages:
+      - libfontconfig-dev
+      - libgraphite2-dev
+      - libharfbuzz-dev
+      - icu-devtools
+      - libpng-dev
+      - libssl-dev
+      - pkg-config
+      - g++
+      - zlib1g-dev
+    stage-packages:
+      - libfontconfig1
+      - fontconfig
+      - libharfbuzz0b
+      - libgraphite2-3
+      - libssl3
+      - zlib1g
+      - libicu70
+      - libpng16-16
+    override-build: |
+      git submodule update --init
+      snapcraftctl build
+      cargo build --release --features external-harfbuzz
+apps:
+  tectonic:
+    command: bin/tectonic
+    plugs:
+    - desktop
+    - network
+    - home
+    - removable-media
