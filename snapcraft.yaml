@@ -1,5 +1,5 @@
 name: tectonic
-version: '0.14.1'
+version: '0.15.0'
 summary: Package for tectonic
 description: |
   Tectonic is a modernized, complete, self-contained TeX/LaTeX engine, powered by XeTeX and TeXLive.
