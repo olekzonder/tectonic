@@ -40,6 +40,7 @@ parts:
       - zlib1g
       - libicu70
       - libpng16-16
+      - biber
     override-build: |
       git submodule update --init
       snapcraftctl build
