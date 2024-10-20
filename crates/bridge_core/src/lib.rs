@@ -106,13 +106,7 @@ pub trait DriverHooks {
     /// argument specifies the cryptographic digest of the data that were
     /// written. Note that this function takes ownership of the name and
     /// digest.
-    fn event_output_closed(
-        &mut self,
-        _name: String,
-        _digest: DigestData,
-        _status: &mut dyn StatusBackend,
-    ) {
-    }
+    fn event_output_closed(&mut self, _name: String, _digest: DigestData) {}
 
     /// This function is called when an input file is closed. The "digest"
     /// argument specifies the cryptographic digest of the data that were
@@ -560,7 +554,7 @@ impl<'a> CoreBridgeState<'a> {
                     rv = true;
                 }
                 let (name, digest) = oh.into_name_digest();
-                self.hooks.event_output_closed(name, digest, self.status);
+                self.hooks.event_output_closed(name, digest);
                 break;
             }
         }
@@ -633,11 +627,7 @@ impl<'a> CoreBridgeState<'a> {
             }
         };
 
-        if let Some(t) = maybe_time {
-            t
-        } else {
-            1 // Intentionally make this distinguishable from the error value 0
-        }
+        maybe_time.unwrap_or(1)
     }
 
     fn input_seek(&mut self, handle: *mut InputHandle, pos: SeekFrom) -> Result<u64> {

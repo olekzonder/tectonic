@@ -15,13 +15,39 @@ the file are detailed below.
 ```toml
 [doc]
 name = <string>  # the document name
-bundle = <url or filesystem path>  # the source of the TeX bundle
+
+# A string identifying the location of the “bundle” of TeX support files
+# underlying the processing of the document. The `tectonic -X new` command
+# will populate this field with the current recommended default.
+# 
+# This field should be a URL (a `.ttb` on the web, or a legacy indexed tar bundle),
+# or a file on your computer (a `.ttb` or a legacy `.zip` bundle).
+bundle = <url or filesystem path>
+
+# Extra search paths for TeX sources, images, etc.
+#
+# This is particularly useful if you have files used
+# by multiple Tectonic documents. For example:
+#
+# repo-root/
+#  ├── resources/
+#  │   └── classes, images, other shared resources
+#  ├── doc1/
+#  │   ├── src/
+#  │   └── Tectonic.toml  <-- Contains `extra_paths = ["../resources"]`
+#  └── doc2/
+#      ├── src/
+#      └── Tectonic.toml  <-- Contains `extra_paths = ["../resources"]`
+extra_paths = ["", ""]
+
+
 
 # The doc.metadata table may contain arbitrary data.
 # It does not affect Tectonic in any way.
 [doc.metadata]
 pubish = false
 arr = [1, 2, [6, 7]]
+
 
 
 # One (of possibly many) output specifications.
@@ -56,6 +82,9 @@ shell_escape = false
 # Specifying this path automatically sets `output.shell_escape` to true.
 # This is optional, and defaults to a temporary directory.
 shell_escape_cwd = "string"
+
+# Whether the synctex files will be created. This is optional and defaults to false.
+synctex = false
 
 # The input file we'll use to build this document,
 # Given as a path relative to the `./src` directory.

@@ -641,12 +641,7 @@ impl DriverHooks for BridgeState {
         self
     }
 
-    fn event_output_closed(
-        &mut self,
-        name: String,
-        digest: DigestData,
-        _status: &mut dyn StatusBackend,
-    ) {
+    fn event_output_closed(&mut self, name: String, digest: DigestData) {
         let summ = self
             .events
             .get_mut(&name)
@@ -704,6 +699,12 @@ impl DriverHooks for BridgeState {
                 }
 
                 let real_path = work.root().join(name);
+                if let Some(prefix) = real_path.parent() {
+                    std::fs::create_dir_all(prefix).map_err(|e| {
+                        tt_error!(status, "failed to create sub directory `{}`", prefix.display(); e.into());
+                        SystemRequestError::Failed
+                    })?;
+                }
                 let mut f = File::create(&real_path).map_err(|e| {
                     tt_error!(status, "failed to create file `{}`", real_path.display(); e.into());
                     SystemRequestError::Failed
@@ -1160,7 +1161,7 @@ impl ProcessingSessionBuilder {
         let format_cache_path = self
             .format_cache_path
             .unwrap_or_else(|| filesystem_root.clone());
-        let format_cache = FormatCache::new(bundle.get_digest(status)?, format_cache_path);
+        let format_cache = FormatCache::new(bundle.get_digest()?, format_cache_path);
 
         let genuine_stdout = if self.print_stdout {
             Some(GenuineStdoutIo::new())
